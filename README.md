@@ -15,11 +15,19 @@ Refer to Computer_Security_Homework_Assignment_2.pdf for environment setup.
 
 System-Security-Attacks/
 ├── 1_exploit.py                                 # Exploit script for standard Buffer Overflow (Shellcode)
+
 ├── 2_exploit.py                                 # Exploit script for ret2libc bypassing NX bit
+
 ├── 3_exploit.py                                 # Exploit script for Return-Oriented Programming bypassing PIE/ASLR
+
 ├── Dockerfile                                   # Docker configuration to replicate the vulnerable environment
+
 ├── entrypoint.sh                                # Container initialization and environment setup script
+
 ├── aslr_on.sh                                   # Shell script to enforce ASLR settings for Q3
+
 ├── Computer_Security_Homework_Assignments_2.pdf # Original assignment specifications and constraints
+
 ├── Exploitation_Scripts_Report.pdf              # Detailed execution logic and exploit mechanics analysis report
+
 └── README.md                                    # Setup instructions and project overview
