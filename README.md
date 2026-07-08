@@ -8,12 +8,11 @@ This repository contains the implementation of three system exploitation techniq
 
 All exploits are written in Python 3 using the `pwntools` framework and are fully containerized using Docker to ensure precise environmental replication.
 
-Refer to Computer_Security_Homework_Assignment for environment setup.
+Refer to Computer_Security_Homework_Assignment_2.pdf for environment setup.
 ---
 
 ## Repository Structure
 
-```text
 System-Security-Attacks/
 ├── Q1-Code-Injection/
 │   └── 1_exploit.py      # Exploit script for standard Buffer Overflow (Shellcode)
