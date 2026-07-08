@@ -1,0 +1,62 @@
+FROM ubuntu:20.04
+LABEL maintainers="hjjun0220@gmail.com"
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+ENV LANG C.UTF-8
+
+RUN useradd -m -d /home/user -s /bin/bash user \
+    && apt-get update \
+    && apt-get -y install \
+       gcc \
+       python3 python3-pip python3-dev git libffi-dev build-essential \
+       vim \
+       vim-gtk3 \
+       sudo \
+       zsh \
+       gdb \
+       gcc-multilib \
+    && apt-get clean \
+    && echo "user ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/user 
+
+RUN python3 -m pip install --upgrade pip
+RUN python3 -m pip install --upgrade pwntools
+RUN pip3 install ropgadget
+RUN sudo git clone https://github.com/longld/peda.git /home/user/peda
+RUN sudo echo "source /home/user/peda/peda.py" >> /home/user/.gdbinit
+
+USER user
+COPY file/ /home/user/
+WORKDIR /home/user
+
+RUN sudo chmod 777 /home/user/*
+RUN sudo dpkg --add-architecture i386
+
+WORKDIR /home/user/1.code_injection
+RUN gcc -z execstack -fno-stack-protector -m32 -no-pie -g -o stack stack.c \
+    && sudo chown root:user stack \
+    && sudo chmod 4755 stack \
+    && sudo chmod 777 1_exploit.py
+
+WORKDIR /home/user/2.ret2libc
+RUN gcc -mpreferred-stack-boundary=2 -z noexecstack -z norelro -fno-stack-protector -fno-pic -fcf-protection=none -m32 -no-pie -g -o retlib retlib.c \
+    && sudo chown root:user retlib \
+    && sudo chmod 4755 retlib \
+    && sudo chmod 777 2_exploit.py
+
+WORKDIR /home/user/3.rop
+RUN gcc -fno-stack-protector -fcf-protection=none -z noexecstack -pie -fpie -g -o rop rop.c \
+    && sudo chown root:user rop \
+    && sudo chmod 4755 rop \
+    && sudo chmod 777 3_exploit.py
+
+WORKDIR /home/user
+RUN sudo chmod 755 /home/user/* \
+    && sudo chmod +x /home/user/aslr_on.sh /home/user/entrypoint.sh \
+    && sudo mv /home/user/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+# ASLR is force-enabled at container start by the entrypoint (requires
+# --privileged). 
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD [ "/bin/bash" ]
